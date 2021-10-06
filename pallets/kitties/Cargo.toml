@@ -11,13 +11,13 @@ frame-support = { git = 'https://github.com/paritytech/substrate.git', tag = 'mo
 frame-system = { git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = '4.0.0-dev', default-features = false }
 sp-io = {git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = "4.0.0-dev", default-features = false }
 sp-runtime =  { git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = '4.0.0-dev', default-features = false }
-pallet-randomness-collective-flip = { git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = '4.0.0-dev', default-features = false }
 sp-std = {git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = "4.0.0-dev", default-features = false }
 
 # test dependencies
 [dev-dependencies]
 serde = { version = "1.0.119" }
-sp-core = { git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = "4.0.0-dev", default-features = false }
+sp-core = { git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = "4.0.0-dev" }
+pallet-balances = {git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-09+1', version = "4.0.0-dev" }
 
 [features]
 default = ["std"]
@@ -28,5 +28,4 @@ std = [
 	"sp-io/std",
 	"sp-std/std",        
  	"sp-runtime/std",
- 	"pallet-randomness-collective-flip/std",
 ]

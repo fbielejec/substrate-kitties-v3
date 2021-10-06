@@ -20,7 +20,8 @@ frame_support::construct_runtime!(
         UncheckedExtrinsic = UncheckedExtrinsic,
     {
         System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
-        RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+        // RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+        Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
         KittiesModule: kitties::{Pallet, Call, Storage, Event<T>},
     }
 );
@@ -51,7 +52,7 @@ impl frame_system::Config for Test {
     type BlockHashCount = BlockHashCount;
     type Version = ();
     type PalletInfo = PalletInfo;
-    type AccountData = ();
+    type AccountData = pallet_balances::AccountData<u64>;
     type OnNewAccount = ();
     type OnKilledAccount = ();
     type SystemWeightInfo = ();
@@ -60,11 +61,42 @@ impl frame_system::Config for Test {
 }
 
 // configure randomness pallet
-impl pallet_randomness_collective_flip::Config for Test {}
+// impl pallet_randomness_collective_flip::Config for Test {}
+
+parameter_types! {
+    // essentially global variable
+  pub static MockRandom: H256 = Default::default ();
+}
+
+impl Randomness<H256, u64> for MockRandom {
+    fn random(_subject: &[u8]) -> (H256, u64) {
+        (MockRandom::get(), 0)
+    }
+}
+
+// conf balances spallet
+parameter_types! {
+    pub const ExistentialDeposit: u64 = 1;
+}
+
+impl pallet_balances::Config for Test {
+    type MaxLocks = ();
+    type MaxReserves = ();
+    type ReserveIdentifier = ();
+    type Balance = u64;
+    type Event = Event;
+    type DustRemoval = ();
+    type ExistentialDeposit = ExistentialDeposit;
+    type AccountStore = System;
+    type WeightInfo = ();
+}
 
 // configure kitties pallet
 impl Config for Test {
     type Event = Event;
+    type Randomness = MockRandom;
+    type KittyIndex = u32;
+    type Currency = Balances;
 }
 
 // Build genesis storage according to the mock runtime.
@@ -111,7 +143,8 @@ fn can_breed() {
         assert_ok!(KittiesModule::create_kitty(Origin::signed(100)));
 
         // inject to have a different genders of minted kitties
-        System::set_extrinsic_index(1);
+        // System::set_extrinsic_index(1);
+        MockRandom::set(H256::from([2; 32]));
 
         assert_ok!(KittiesModule::create_kitty(Origin::signed(100)));
 
@@ -133,7 +166,7 @@ fn can_breed() {
         assert_ok!(KittiesModule::breed_kitties(Origin::signed(100), 0, 1));
 
         let kitty = Kitty([
-            59, 254, 219, 122, 245, 239, 191, 125, 255, 239, 247, 247, 251, 239, 247, 254,
+            187, 250, 235, 118, 211, 247, 237, 253, 187, 239, 191, 185, 239, 171, 211, 122,
         ]);
 
         assert_eq!(KittiesModule::kitties(100, 2), Some(kitty.clone()));
