@@ -283,8 +283,23 @@ impl pallet_template::Config for Runtime {
 impl pallet_kitties::Config for Runtime {
     type Event = Event;
     type Randomness = RandomnessCollectiveFlip;
-    type KittyIndex = u32;
+    // type KittyIndex = u32;
     type Currency = Balances;
+}
+
+// configure NFT pallet
+parameter_types! {
+    pub const MaxClassMetadata: u32 = 0;
+    pub const MaxTokenMetadata: u32 = 0;
+}
+
+impl orml_nft::Config for Runtime {
+    type ClassId = u32;
+    type TokenId = u32;
+    type ClassData = ();
+    type TokenData = pallet_kitties::Kitty;
+    type MaxClassMetadata = MaxClassMetadata;
+    type MaxTokenMetadata = MaxTokenMetadata;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -306,6 +321,7 @@ construct_runtime!(
         // Include the custom logic from the pallet-template in the runtime.
         TemplateModule: pallet_template::{Pallet, Call, Storage, Event<T>},
         Kitties: pallet_kitties::{Pallet, Storage, Event<T>},
+        Nft: orml_nft::{Pallet, Storage, Config<T>},
     }
 );
 
@@ -513,6 +529,8 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, pallet_balances, Balances);
             add_benchmark!(params, batches, pallet_timestamp, Timestamp);
             add_benchmark!(params, batches, pallet_template, TemplateModule);
+            // add pallet to benchmarks
+            add_benchmark!(params, batches, pallet_kitties, Kitties);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)
